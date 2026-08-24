@@ -1,0 +1,6 @@
+{
+  "name": "iOS Expense Tracker & Monthly Planner",
+  "description": "Personal finance and expenses tracker with iOS aesthetic, dynamic dashboard, expense pie charts, income logging, monthly comparisons, budget resets, and CSV export.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
