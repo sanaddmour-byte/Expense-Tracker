@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import React, { useMemo } from 'react';
-import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import { EmptyState } from '../../src/components/EmptyState';
 import { MatchCard } from '../../src/components/MatchCard';
 import { matches as allMatches } from '../../src/data/mockData';
@@ -10,6 +11,7 @@ import { spacing } from '../../src/theme/theme';
 
 export default function FollowingScreen() {
   const { theme } = useAppTheme();
+  const router = useRouter();
   const { teams, matches: starredMatches, isTeamStarred, isMatchStarred, toggleMatch, toggleMute } = useStarStore();
 
   const followedMatches = useMemo(() => {
@@ -41,14 +43,20 @@ export default function FollowingScreen() {
               <Text style={[styles.sectionTitle, { color: theme.textPrimary }]}>Starred Teams</Text>
               {teams.map((team) => (
                 <View key={team.teamId} style={[styles.teamRow, { backgroundColor: theme.card }]}>
-                  <Text style={[styles.teamName, { color: theme.textPrimary }]}>{team.teamName}</Text>
-                  <Text style={[styles.teamCompetition, { color: theme.textSecondary }]}>{team.competitionName}</Text>
-                  <Ionicons
-                    name={team.isMuted ? 'notifications-off' : 'notifications'}
-                    size={18}
-                    color={team.isMuted ? theme.textSecondary : theme.pitchGreen}
-                    onPress={() => toggleMute(team.teamId)}
-                  />
+                  <Pressable
+                    style={styles.teamRowTouchable}
+                    onPress={() => router.push(`/team/${team.teamId}`)}
+                  >
+                    <Text style={[styles.teamName, { color: theme.textPrimary }]}>{team.teamName}</Text>
+                    <Text style={[styles.teamCompetition, { color: theme.textSecondary }]}>{team.competitionName}</Text>
+                  </Pressable>
+                  <Pressable onPress={() => toggleMute(team.teamId)} hitSlop={8}>
+                    <Ionicons
+                      name={team.isMuted ? 'notifications-off' : 'notifications'}
+                      size={18}
+                      color={team.isMuted ? theme.textSecondary : theme.pitchGreen}
+                    />
+                  </Pressable>
                 </View>
               ))}
             </View>
@@ -92,6 +100,12 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     borderRadius: 12,
     marginBottom: spacing.sm,
+  },
+  teamRowTouchable: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
   },
   teamName: { fontSize: 15, fontWeight: '500', flex: 1 },
   teamCompetition: { fontSize: 12 },

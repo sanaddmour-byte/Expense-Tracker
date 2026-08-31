@@ -1,4 +1,14 @@
-import { Competition, Match, MatchStatistics, Team } from '../types/models';
+import {
+  Competition,
+  HeadToHeadRecord,
+  Match,
+  MatchLineups,
+  MatchStatistics,
+  Standing,
+  Team,
+  TeamLineup,
+  TeamProfile,
+} from '../types/models';
 
 export const premierLeague: Competition = { id: 2021, name: 'Premier League', country: 'England' };
 export const laLiga: Competition = { id: 2014, name: 'La Liga', country: 'Spain' };
@@ -137,3 +147,113 @@ export const statisticsByMatchId: Record<number, MatchStatistics> = {
 export function findMatch(id: number): Match | undefined {
   return matches.find((m) => m.id === id);
 }
+
+export function findTeam(id: number): Team | undefined {
+  return allTeams.find((t) => t.id === id);
+}
+
+// MARK: - Squads
+
+const POSITIONS = ['Goalkeeper', 'Defender', 'Defender', 'Defender', 'Defender', 'Midfielder', 'Midfielder', 'Midfielder', 'Forward', 'Forward', 'Forward'];
+
+function generateSquad(team: Team) {
+  return POSITIONS.map((position, index) => ({
+    id: team.id * 100 + index,
+    name: `${team.shortName} Player ${index + 1}`,
+    position,
+    shirtNumber: index + 1,
+  }));
+}
+
+export function teamProfile(teamId: number): TeamProfile | undefined {
+  const team = findTeam(teamId);
+  if (!team) return undefined;
+  const involved = matches.filter((m) => m.homeTeam.id === teamId || m.awayTeam.id === teamId);
+  const competition = involved[0]?.competition ?? premierLeague;
+  return {
+    team,
+    competition,
+    venue: team.venue,
+    squad: generateSquad(team),
+    upcomingFixtureIds: involved.filter((m) => m.status === 'scheduled').map((m) => m.id),
+    recentResultIds: involved.filter((m) => m.status === 'finished').map((m) => m.id),
+  };
+}
+
+// MARK: - Lineups
+
+const startingXI433 = (base: number, captainIndex: number) => {
+  const positions = [
+    { x: 0.05, y: 0.5 },
+    { x: 0.2, y: 0.15 }, { x: 0.2, y: 0.4 }, { x: 0.2, y: 0.6 }, { x: 0.2, y: 0.85 },
+    { x: 0.45, y: 0.25 }, { x: 0.45, y: 0.5 }, { x: 0.45, y: 0.75 },
+    { x: 0.75, y: 0.2 }, { x: 0.8, y: 0.5 }, { x: 0.75, y: 0.8 },
+  ];
+  return positions.map((position, index) => ({
+    id: base + index,
+    name: `Player ${base + index}`,
+    shirtNumber: index + 1,
+    position,
+    isCaptain: index === captainIndex,
+  }));
+};
+
+const startingXI4231 = (base: number, captainIndex: number) => {
+  const positions = [
+    { x: 0.05, y: 0.5 },
+    { x: 0.2, y: 0.15 }, { x: 0.2, y: 0.4 }, { x: 0.2, y: 0.6 }, { x: 0.2, y: 0.85 },
+    { x: 0.4, y: 0.35 }, { x: 0.4, y: 0.65 },
+    { x: 0.6, y: 0.15 }, { x: 0.65, y: 0.5 }, { x: 0.6, y: 0.85 },
+    { x: 0.85, y: 0.5 },
+  ];
+  return positions.map((position, index) => ({
+    id: base + index,
+    name: `Player ${base + index}`,
+    shirtNumber: index + 1,
+    position,
+    isCaptain: index === captainIndex,
+  }));
+};
+
+const bench = (base: number): TeamLineup['substitutes'] =>
+  Array.from({ length: 7 }, (_, i) => ({
+    id: base + i,
+    name: `Sub ${base + i}`,
+    shirtNumber: 12 + i,
+    position: { x: 0, y: 0 },
+  }));
+
+export const lineupsByMatchId: Record<number, MatchLineups> = {
+  1001: {
+    home: { formation: '4-3-3', startingXI: startingXI433(1, 6), substitutes: bench(12), coachName: 'Mikel Arteta' },
+    away: { formation: '4-2-3-1', startingXI: startingXI4231(30, 8), substitutes: bench(41), coachName: 'Enzo Maresca' },
+  },
+};
+
+// MARK: - Head-to-head
+
+export const headToHeadByTeamPair: Record<string, HeadToHeadRecord> = {
+  [pairKey(manCity.id, liverpool.id)]: {
+    homeWins: 3,
+    draws: 2,
+    awayWins: 1,
+    recentMeetingIds: [1005],
+  },
+};
+
+export function pairKey(teamAId: number, teamBId: number): string {
+  return [teamAId, teamBId].sort((a, b) => a - b).join('-');
+}
+
+export function headToHead(teamAId: number, teamBId: number): HeadToHeadRecord | undefined {
+  return headToHeadByTeamPair[pairKey(teamAId, teamBId)];
+}
+
+// MARK: - Standings
+
+export const standings: Standing[] = [
+  { position: 1, team: manCity, played: 20, won: 15, draw: 3, lost: 2, goalsFor: 48, goalsAgainst: 18, points: 48 },
+  { position: 2, team: arsenal, played: 20, won: 14, draw: 4, lost: 2, goalsFor: 44, goalsAgainst: 20, points: 46 },
+  { position: 3, team: liverpool, played: 20, won: 13, draw: 5, lost: 2, goalsFor: 42, goalsAgainst: 22, points: 44 },
+  { position: 4, team: chelsea, played: 20, won: 10, draw: 6, lost: 4, goalsFor: 35, goalsAgainst: 25, points: 36 },
+];

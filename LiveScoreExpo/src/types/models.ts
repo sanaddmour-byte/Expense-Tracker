@@ -75,6 +75,66 @@ export interface MatchStatistics {
   foulsAway: number;
 }
 
+export interface SquadPlayer {
+  id: number;
+  name: string;
+  position: string;
+  shirtNumber?: number;
+}
+
+export interface PitchPosition {
+  x: number; // 0...1, 0 = own goal line
+  y: number; // 0...1
+}
+
+export interface LineupPlayer {
+  id: number;
+  name: string;
+  shirtNumber: number;
+  position: PitchPosition;
+  isCaptain?: boolean;
+}
+
+export interface TeamLineup {
+  formation: string;
+  startingXI: LineupPlayer[];
+  substitutes: LineupPlayer[];
+  coachName?: string;
+}
+
+export interface MatchLineups {
+  home: TeamLineup;
+  away: TeamLineup;
+}
+
+export interface HeadToHeadRecord {
+  homeWins: number;
+  draws: number;
+  awayWins: number;
+  recentMeetingIds: number[];
+}
+
+export interface Standing {
+  position: number;
+  team: Team;
+  played: number;
+  won: number;
+  draw: number;
+  lost: number;
+  goalsFor: number;
+  goalsAgainst: number;
+  points: number;
+}
+
+export interface TeamProfile {
+  team: Team;
+  competition: Competition;
+  venue?: string;
+  squad: SquadPlayer[];
+  upcomingFixtureIds: number[];
+  recentResultIds: number[];
+}
+
 export type FeedFilter = 'All' | 'Live' | 'Today' | 'Upcoming' | 'Finished';
 
 export const FEED_FILTERS: FeedFilter[] = ['All', 'Live', 'Today', 'Upcoming', 'Finished'];

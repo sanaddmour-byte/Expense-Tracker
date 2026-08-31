@@ -12,6 +12,7 @@ import { EmptyState } from '../../src/components/EmptyState';
 import { FilterBar } from '../../src/components/FilterBar';
 import { MatchCard } from '../../src/components/MatchCard';
 import { matches as allMatches } from '../../src/data/mockData';
+import { useSettingsStore } from '../../src/store/SettingsStore';
 import { useStarStore } from '../../src/store/StarStore';
 import { useAppTheme } from '../../src/theme/ThemeProvider';
 import { spacing } from '../../src/theme/theme';
@@ -33,12 +34,14 @@ function groupByCompetition(matches: Match[]): { competition: Competition; match
 export default function LiveScoresScreen() {
   const { theme } = useAppTheme();
   const { isTeamStarred, isMatchStarred, toggleMatch } = useStarStore();
+  const { isCompetitionPreferred } = useSettingsStore();
   const [filter, setFilter] = useState<FeedFilter>('All');
   const [query, setQuery] = useState('');
   const [refreshing, setRefreshing] = useState(false);
 
   const filtered = useMemo(() => {
     return allMatches
+      .filter((m) => isCompetitionPreferred(m.competition.id))
       .filter((m) => matchesFilter(m, filter))
       .filter((m) =>
         query.trim().length === 0
@@ -47,7 +50,7 @@ export default function LiveScoresScreen() {
               .toLowerCase()
               .includes(query.trim().toLowerCase())
       );
-  }, [filter, query]);
+  }, [filter, query, isCompetitionPreferred]);
 
   const grouped = useMemo(() => groupByCompetition(filtered), [filtered]);
 

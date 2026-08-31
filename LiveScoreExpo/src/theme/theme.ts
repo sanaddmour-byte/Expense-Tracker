@@ -7,8 +7,21 @@ export const palette = {
   black: '#000000',
 };
 
-export const lightTheme = {
-  mode: 'light' as const,
+export interface Theme {
+  mode: 'light' | 'dark';
+  pitchGreen: string;
+  accentYellow: string;
+  liveRed: string;
+  background: string;
+  card: string;
+  textPrimary: string;
+  textSecondary: string;
+  divider: string;
+  tabBarBackground: string;
+}
+
+export const lightTheme: Theme = {
+  mode: 'light',
   pitchGreen: palette.pitchGreenLight,
   accentYellow: palette.accentYellow,
   liveRed: palette.liveRed,
@@ -20,8 +33,8 @@ export const lightTheme = {
   tabBarBackground: '#FFFFFF',
 };
 
-export const darkTheme = {
-  mode: 'dark' as const,
+export const darkTheme: Theme = {
+  mode: 'dark',
   pitchGreen: palette.pitchGreenDark,
   accentYellow: palette.accentYellow,
   liveRed: '#F87171',
@@ -32,8 +45,6 @@ export const darkTheme = {
   divider: '#2C2C2E',
   tabBarBackground: '#1C1C1E',
 };
-
-export type Theme = typeof lightTheme;
 
 export const spacing = { xs: 4, sm: 8, md: 12, lg: 16, xl: 24, xxl: 32 };
 export const radius = { card: 14, badge: 8, pill: 999 };

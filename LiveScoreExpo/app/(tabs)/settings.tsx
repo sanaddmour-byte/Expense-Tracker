@@ -1,24 +1,15 @@
 import { Ionicons } from '@expo/vector-icons';
-import React, { useState } from 'react';
-import { Pressable, SafeAreaView, StyleSheet, Switch, Text, View } from 'react-native';
+import { useRouter } from 'expo-router';
+import React from 'react';
+import { Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import { useAppTheme } from '../../src/theme/ThemeProvider';
 import { spacing } from '../../src/theme/theme';
-
-const EVENT_TYPES = [
-  { key: 'kickoff', title: 'Kickoff', icon: 'flag' as const },
-  { key: 'goal', title: 'Goals', icon: 'football' as const },
-  { key: 'redCard', title: 'Red Cards', icon: 'square' as const },
-  { key: 'halfTime', title: 'Half-Time', icon: 'pause-circle' as const },
-  { key: 'fullTime', title: 'Full-Time / Final Score', icon: 'checkmark-done-circle' as const },
-];
 
 const MODES = ['system', 'light', 'dark'] as const;
 
 export default function SettingsScreen() {
   const { theme, mode, setMode } = useAppTheme();
-  const [enabledEvents, setEnabledEvents] = useState<Record<string, boolean>>(
-    Object.fromEntries(EVENT_TYPES.map((e) => [e.key, true]))
-  );
+  const router = useRouter();
 
   return (
     <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.background }]}>
@@ -29,23 +20,16 @@ export default function SettingsScreen() {
       <View style={styles.content}>
         <Text style={[styles.sectionTitle, { color: theme.textSecondary }]}>NOTIFICATIONS</Text>
         <View style={[styles.card, { backgroundColor: theme.card }]}>
-          {EVENT_TYPES.map((event, index) => (
-            <View
-              key={event.key}
-              style={[
-                styles.row,
-                index < EVENT_TYPES.length - 1 && { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: theme.divider },
-              ]}
-            >
-              <Ionicons name={event.icon} size={18} color={theme.pitchGreen} style={{ width: 24 }} />
-              <Text style={[styles.rowLabel, { color: theme.textPrimary }]}>{event.title}</Text>
-              <Switch
-                value={enabledEvents[event.key]}
-                onValueChange={(v) => setEnabledEvents((prev) => ({ ...prev, [event.key]: v }))}
-                trackColor={{ true: theme.pitchGreen, false: theme.divider }}
-              />
-            </View>
-          ))}
+          <MenuRow
+            icon="notifications"
+            label="Notification Preferences"
+            onPress={() => router.push('/settings/notifications')}
+          />
+        </View>
+
+        <Text style={[styles.sectionTitle, { color: theme.textSecondary, marginTop: spacing.xl }]}>FEED</Text>
+        <View style={[styles.card, { backgroundColor: theme.card }]}>
+          <MenuRow icon="star-half" label="Preferred Leagues" onPress={() => router.push('/settings/leagues')} />
         </View>
 
         <Text style={[styles.sectionTitle, { color: theme.textSecondary, marginTop: spacing.xl }]}>APPEARANCE</Text>
@@ -56,10 +40,7 @@ export default function SettingsScreen() {
               <Pressable
                 key={m}
                 onPress={() => setMode(m)}
-                style={[
-                  styles.modeButton,
-                  { backgroundColor: active ? theme.pitchGreen : 'transparent' },
-                ]}
+                style={[styles.modeButton, { backgroundColor: active ? theme.pitchGreen : 'transparent' }]}
               >
                 <Text style={{ color: active ? '#FFFFFF' : theme.textPrimary, fontWeight: '600', fontSize: 13 }}>
                   {m[0].toUpperCase() + m.slice(1)}
@@ -81,6 +62,25 @@ export default function SettingsScreen() {
         </View>
       </View>
     </SafeAreaView>
+  );
+}
+
+function MenuRow({
+  icon,
+  label,
+  onPress,
+}: {
+  icon: keyof typeof Ionicons.glyphMap;
+  label: string;
+  onPress: () => void;
+}) {
+  const { theme } = useAppTheme();
+  return (
+    <Pressable onPress={onPress} style={styles.row}>
+      <Ionicons name={icon} size={18} color={theme.pitchGreen} style={{ width: 24 }} />
+      <Text style={[styles.rowLabel, { color: theme.textPrimary }]}>{label}</Text>
+      <Ionicons name="chevron-forward" size={18} color={theme.textSecondary} />
+    </Pressable>
   );
 }
 
