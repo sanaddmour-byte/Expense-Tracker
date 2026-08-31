@@ -1,0 +1,15 @@
+// Shared build settings for all configurations.
+// API_FOOTBALL_KEY and FOOTBALL_DATA_KEY are intentionally left undefined here.
+// Define them in Secrets.xcconfig (gitignored) to enable live data.
+// With no key present, the app automatically falls back to the bundled mock data provider.
+
+PRODUCT_BUNDLE_IDENTIFIER = com.livescore.app
+IPHONEOS_DEPLOYMENT_TARGET = 17.0
+SWIFT_VERSION = 5.9
+DEVELOPMENT_TEAM =
+CODE_SIGN_STYLE = Automatic
+ENABLE_PREVIEWS = YES
+
+// Feature flag: AUTO (use live API only when a key is present), MOCK (force mock data),
+// LIVE (force live API, will error without a key).
+DATA_SOURCE_MODE = AUTO
