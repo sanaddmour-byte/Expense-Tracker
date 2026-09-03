@@ -6,3 +6,11 @@ coverage/
 *.log
 .env*
 !.env.example
+
+# Xcode / iOS (LiveScore)
+LiveScore/Configs/Secrets.xcconfig
+LiveScore/**/xcuserdata/
+LiveScore/**/*.xcuserstate
+LiveScore/DerivedData/
+LiveScore/.build/
+*.xcuserdatad/
