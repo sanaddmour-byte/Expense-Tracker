@@ -25,7 +25,11 @@ export const psg: Team = { id: 524, name: 'Paris Saint-Germain', shortName: 'PSG
 
 export const allTeams: Team[] = [arsenal, chelsea, liverpool, manCity, realMadrid, barcelona, bayern, psg];
 
-const now = new Date();
+// Fixed reference point (rather than `new Date()`) so every render — including the
+// static export's build-time prerender vs. its client-side hydration pass — produces
+// identical kickoff timestamps. Using the real clock here caused a React hydration
+// mismatch on the exported site, since build time and page-load time are never equal.
+const now = new Date('2026-09-03T15:00:00.000Z');
 const minutesAgo = (m: number) => new Date(now.getTime() - m * 60_000).toISOString();
 const hoursFromNow = (h: number) => new Date(now.getTime() + h * 3_600_000).toISOString();
 const daysFromNow = (d: number) => new Date(now.getTime() + d * 86_400_000).toISOString();

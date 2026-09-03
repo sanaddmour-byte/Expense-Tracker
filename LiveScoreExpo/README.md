@@ -21,6 +21,23 @@ npm run ios      # requires Xcode/macOS
 npm run android  # requires Android Studio
 ```
 
+## Live preview on GitHub Pages
+
+`.github/workflows/deploy-livescore-pages.yml` builds the static web export
+(`npx expo export --platform web`) and deploys it to GitHub Pages on every push to
+`main` or this project's working branch, or on demand via **Actions → Deploy LiveScore
+(Expo web) to GitHub Pages → Run workflow**.
+
+`app.json` sets `expo.experiments.baseUrl` to `/Expense-Tracker` (this repo's name) so
+the exported site's asset and route paths resolve correctly once served from
+`https://<owner>.github.io/Expense-Tracker/` instead of a domain root — that setting
+only affects the production static export, not `expo start --web`, so local dev is
+unaffected.
+
+**One-time setup required** (repo admin, via the GitHub web UI — no API for this):
+Settings → Pages → Build and deployment → Source → **GitHub Actions**. Once that's set,
+the workflow above handles every deploy automatically.
+
 ## Structure
 
 ```
